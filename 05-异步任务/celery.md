@@ -2,25 +2,10 @@
 
 Celery 是一个简单、灵活且可靠的，处理大量消息的分布式系统，并且提供维护这样一个系统的必需工具。它是一个专注于实时处理的任务队列，同时也支持任务调度。
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/60a7d9b8-0f32-41f6-b01e-51bc2cee0db0/Untitled.png)
+![image](https://user-images.githubusercontent.com/49837274/225781602-92b087aa-1b2c-4460-83b1-cd4b579d0a85.png)
 
 Celery是一个本身不提供队列服务，官方推荐使用RabbitMQ或Redis来实现消息队列服务
 
-- 安装RabbitMQ
-    
-    ```python
-    docker pull rabbitmq
-    docker run -d -p 5672:5672 --name myrabbit rabbitmq
-    docker container exec -it myrabbit /bin/bash
-    ```
-    
-- 创建用户、资源以及分配操作权限
-    
-    ```python
-    rabbitmqctl add_user root root
-    rabbitmqctl set_user_tags root administrator
-    rabbitmqctl add_vhost vhost1
-    rabbitmqctl set_permissions -p vhost1 root ".*" ".*" ".*"
     ```
     
 - 创建celery实例
@@ -32,9 +17,14 @@ Celery是一个本身不提供队列服务，官方推荐使用RabbitMQ或Redis�
     
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_app.settings")
     
+    MQ_HOST = settings.REDIS_MQ_HOST
+    MQ_PORT = settings.REDIS_MQ_PORT
+    MQ_PASSWORD = settings.REDIS_MQ_PASSWORD
+    MQ_DB = settings.REDIS_MQ_DB
+    
     app = Celery(
         'celery',
-        broker="amqp://root:root@localhost:32780/broker"
+        broker=f"redis://:{MQ_PASSWORD}@{MQ_HOST}:{MQ_PORT}/{MQ_DB}"
     )
     
     app.config_from_object(
